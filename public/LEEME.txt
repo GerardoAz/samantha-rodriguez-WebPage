@@ -1,0 +1,16 @@
+CARPETA PUBLIC — los archivos de Samantha
+=========================================
+
+foto  →  samanthaPicture.png        ✔ ya está
+cv    →  cv.pdf                     ✔ ya está (versión People Business Partner)
+
+Para reemplazar la foto: deja la nueva aquí con cualquiera de estos nombres
+y la página la toma sola, sin tocar código:
+
+    samanthaPicture.png  (la actual)
+    foto.jpg / foto.jpeg / foto.png / foto.webp
+
+Si ninguna existe, la página muestra un placeholder gris.
+Recomendado: vertical, mínimo 800 x 1000 px, fondo blanco.
+
+Para reemplazar el CV que descarga el botón del hero: sustituye cv.pdf.

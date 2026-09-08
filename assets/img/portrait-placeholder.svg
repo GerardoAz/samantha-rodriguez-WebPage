@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1100" role="img" aria-label="Portrait placeholder">
+  <rect width="900" height="1100" fill="#FFFFFF"/>
+  <g fill="#EDEAE3">
+    <circle cx="450" cy="420" r="150"/>
+    <path d="M450 610c-175 0-315 120-315 268v222h630V878c0-148-140-268-315-268z"/>
+  </g>
+  <g font-family="Inter, Helvetica, Arial, sans-serif" text-anchor="middle" fill="#A9B0BB">
+    <text x="450" y="1010" font-size="30" font-weight="600" letter-spacing="2">PHOTO PLACEHOLDER</text>
+    <text x="450" y="1052" font-size="24">Save the portrait as assets/img/samantha.jpg</text>
+  </g>
+</svg>
