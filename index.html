@@ -20,6 +20,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&display=swap" rel="stylesheet">
 
+  <link rel="preload" as="image" href="public/samanthaPicture.webp" fetchpriority="high">
   <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
@@ -124,12 +125,13 @@
       <figure class="hero__media reveal">
         <div class="hero__frame">
           <div class="hero__photo">
-            <!-- Portrait: public/samanthaPicture.png. Swapping it for public/foto.jpg
-                 (or .jpeg/.png/.webp) also works — the fallback chain below picks up
-                 whichever file exists, and shows a placeholder if none do. -->
-            <img src="public/samanthaPicture.png" alt="Portrait of Samantha Rodriguez"
-                 width="1086" height="1448" loading="eager"
-                 data-fallbacks="public/foto.jpg|public/foto.jpeg|public/foto.png|public/foto.webp|assets/img/portrait-placeholder.svg"
+            <!-- Portrait: public/samanthaPicture.webp (152 KB, alpha preserved), with
+                 the original .png right behind it in the chain. Swapping either for
+                 public/foto.* also works — the chain picks up whichever file exists
+                 and shows a placeholder if none do. -->
+            <img src="public/samanthaPicture.webp" alt="Portrait of Samantha Rodriguez"
+                 width="1086" height="1448" loading="eager" fetchpriority="high"
+                 data-fallbacks="public/samanthaPicture.png|public/foto.webp|public/foto.jpg|public/foto.jpeg|public/foto.png|assets/img/portrait-placeholder.svg"
                  onerror="(function(i){var f=(i.dataset.fallbacks||'').split('|').filter(Boolean);if(!f.length){i.onerror=null;return;}i.dataset.fallbacks=f.slice(1).join('|');i.src=f[0];})(this)">
           </div>
         </div>
