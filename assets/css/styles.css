@@ -398,7 +398,9 @@ strong { color: var(--ink); font-weight: 600; }
   border-radius: var(--r-lg);
   overflow: hidden;
   box-shadow: var(--shadow-lg);
-  aspect-ratio: 4 / 5;
+  /* 9/10 en lugar de 4/5: con object-fit cover la tarjeta deja ver hasta cerca del
+     85% del archivo, que cae justo por encima de las manos. */
+  aspect-ratio: 9 / 10;
 }
 .hero__photo img {
   width: 100%;
@@ -408,8 +410,8 @@ strong { color: var(--ink); font-weight: 600; }
   /* The portrait is a transparent cut-out and the 4:5 crop cuts it off mid-body,
      so the bottom is masked away rather than left on a hard edge. A mask (not a
      white overlay) means the dissolve stays correct if the card colour changes. */
-  -webkit-mask-image: linear-gradient(to bottom, #000 78%, rgba(0, 0, 0, .45) 92%, transparent 100%);
-          mask-image: linear-gradient(to bottom, #000 78%, rgba(0, 0, 0, .45) 92%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 86%, rgba(0, 0, 0, .45) 95%, transparent 100%);
+          mask-image: linear-gradient(to bottom, #000 86%, rgba(0, 0, 0, .45) 95%, transparent 100%);
 }
 
 /* Fact bar */
@@ -436,6 +438,8 @@ strong { color: var(--ink); font-weight: 600; }
   letter-spacing: -.02em;
 }
 .factbar__plus { color: var(--brass); }
+/* "100–2,500+" es mucho mas largo que una cifra suelta y se desborda al tamano normal */
+.factbar__value--range { font-size: clamp(1.3rem, 2.3vw, 1.7rem); }
 
 .factbar__label {
   display: block;
@@ -661,38 +665,106 @@ strong { color: var(--ink); font-weight: 600; }
   color: var(--body);
 }
 
-/* ---------- 12. Capabilities ---------- */
-.capabilities { display: grid; gap: 0; }
-.cap {
-  display: grid;
-  grid-template-columns: 230px 1fr;
-  gap: clamp(20px, 4vw, 48px);
-  align-items: start;
-  padding: 26px 0;
-  border-top: 1px solid var(--line);
+/* ---------- 12. Testimonials ---------- */
+/* Encabezado a dos columnas: texto a la izquierda, boton de LinkedIn a la derecha */
+.section__head--split {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+  max-width: none;
 }
-.cap:last-child { border-bottom: 1px solid var(--line); }
+.section__head--split .section__head-main { max-width: 40rem; }
+.section__head--split .btn { flex: none; }
 
-.cap__title {
-  font-family: var(--font-sans);
-  font-size: .93rem;
-  font-weight: 600;
-  letter-spacing: .01em;
+.tcar { position: relative; }
+
+.tcar__track {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  /* El scrollbar nativo sobra: se navega con las flechas o arrastrando */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  /* Solo padding vertical: el horizontal desplazaba el reposo del scroll-snap
+     unos pixeles y rompia la deteccion de "estoy al principio". */
+  padding: 6px 0 10px;
+  margin: -6px 0 -10px;
+}
+.tcar__track::-webkit-scrollbar { display: none; }
+.tcar__track:focus-visible { outline: 2px solid var(--brass); outline-offset: 4px; }
+
+.tcar__card {
+  /* ~2.4 tarjetas a la vista en escritorio: la cortada es lo que avisa que hay mas */
+  flex: 0 0 clamp(290px, 40%, 430px);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px 26px 26px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  box-shadow: var(--shadow-sm);
+}
+.tcar__quote { flex: none; fill: var(--brass-soft); stroke: none; }
+
+.tcar__text {
+  flex: 1;
+  margin: 0;
+  font-size: .955rem;
+  line-height: 1.68;
   color: var(--ink);
-  padding-top: 5px;
 }
 
-.chips { display: flex; flex-wrap: wrap; gap: 9px; }
-.chips li {
-  padding: 7px 14px;
-  background: var(--bg-soft);
-  border: 1px solid var(--line-soft);
-  border-radius: var(--r-sm);
-  font-size: .845rem;
-  color: var(--body);
-  transition: border-color .2s ease, color .2s ease;
+.tcar__who {
+  padding-top: 16px;
+  border-top: 1px solid var(--line-soft);
 }
-.chips li:hover { border-color: var(--brass-soft); color: var(--ink); }
+.tcar__name {
+  margin: 0 0 2px;
+  font-family: var(--font-display);
+  font-size: 1.03rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.tcar__role {
+  margin: 0;
+  font-size: .815rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.tcar__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-top: -24px;
+  background: var(--navy-900);
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 8px 22px -8px rgba(11, 33, 56, .6);
+  transition: background-color .2s ease, opacity .2s ease, transform .2s ease;
+}
+.tcar__nav svg { stroke: currentColor; }
+.tcar__nav:hover:not(:disabled) { background: var(--navy-700); transform: scale(1.07); }
+.tcar__nav:disabled { opacity: .22; cursor: default; box-shadow: none; }
+.tcar__nav--prev { left: -20px; }
+.tcar__nav--next { right: -20px; }
+
+.tcar__note {
+  margin-top: 26px;
+  font-size: .875rem;
+  color: var(--muted);
+}
 
 /* ---------- 13. Education & certifications ---------- */
 .two-col {
@@ -860,6 +932,7 @@ a.contact__card:hover {
   .grid--4 { grid-template-columns: repeat(2, 1fr); }
   .highlight { grid-template-columns: 1fr; gap: 20px; }
   .contact__grid { grid-template-columns: repeat(2, 1fr); }
+  .tcar__card { flex: 0 0 clamp(285px, 62%, 400px); }
 }
 
 @media (max-width: 900px) {
@@ -874,9 +947,8 @@ a.contact__card:hover {
   .profile { grid-template-columns: 1fr; }
   .achievements { grid-template-columns: 1fr; }
   .achievement:nth-child(2) { border-top: 1px solid var(--line); padding-top: 30px; }
-  .cap { grid-template-columns: 1fr; gap: 14px; }
-  .cap__title { padding-top: 0; }
   .two-col { grid-template-columns: 1fr; }
+  .section__head--split { flex-direction: column; align-items: flex-start; gap: 22px; }
   .factbar { grid-template-columns: repeat(2, 1fr); }
   .factbar__item:nth-child(2n) { border-right: 0; }
   .factbar__item:nth-child(-n+2) { border-bottom: 1px solid var(--line); padding-bottom: 24px; }
@@ -934,6 +1006,13 @@ a.contact__card:hover {
   .brand__name { display: none; }
   .hero__actions { gap: 10px; }
   .btn { padding: 12px 18px; }
+
+  /* En movil solo cabe una tarjeta, asi que las flechas bajan en vez de taparla */
+  .tcar__card { flex: 0 0 86%; }
+  .tcar { padding-bottom: 66px; }
+  .tcar__nav { top: auto; bottom: 0; margin-top: 0; width: 46px; height: 46px; }
+  .tcar__nav--prev { left: 0; }
+  .tcar__nav--next { right: auto; left: 56px; }
 }
 
 /* ---------- 18. Motion preferences ---------- */
@@ -957,6 +1036,12 @@ a.contact__card:hover {
   .highlight__title, .highlight__body p, .contact__sub { color: #000 !important; }
   .contact__card { border: 1px solid #ccc; background: #fff !important; }
   .card, .panel, .tl-item { break-inside: avoid; page-break-inside: avoid; }
+  /* Un track horizontal impreso saldria cortado: se despliega como lista */
+  .tcar__nav { display: none !important; }
+  .tcar { padding-bottom: 0; }
+  .tcar__track { display: block; overflow: visible; margin: 0; padding: 0; }
+  .tcar__card { break-inside: avoid; page-break-inside: avoid; margin-bottom: 10pt; }
+  .section__head--split { display: block; }
   .site-footer { background: #fff; border-top: 1px solid #ccc; }
   .site-footer__name, .site-footer__copy { color: #000; }
   a { color: #000; }

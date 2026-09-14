@@ -53,6 +53,96 @@
     });
   }
 
+  /* ---- Testimonials carousel ---- */
+  var track    = document.getElementById('tcarTrack');
+  var prevBtn  = document.getElementById('tcarPrev');
+  var nextBtn  = document.getElementById('tcarNext');
+
+  if (track && prevBtn && nextBtn) {
+    // One "page" is a card plus the gap between cards, read from the DOM so the
+    // responsive card widths never need to be duplicated here.
+    var stepSize = function () {
+      var card = track.querySelector('.tcar__card');
+      if (!card) { return track.clientWidth; }
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      return card.getBoundingClientRect().width + gap;
+    };
+
+    var syncArrows = function () {
+      var max = track.scrollWidth - track.clientWidth;
+      // Snapping can come to rest a couple of pixels off either end, so compare
+      // with a tolerance that follows the track's own padding rather than 0.
+      var slack = (parseFloat(getComputedStyle(track).paddingLeft) || 0) + 3;
+      prevBtn.disabled = track.scrollLeft <= slack;
+      nextBtn.disabled = track.scrollLeft >= max - slack;
+    };
+
+    // The browser's own smooth scrolling is silently a no-op in some embedded and
+    // preview contexts, which would leave the arrows looking broken. Tweening by
+    // hand always moves, and snapping is switched off for the duration so mandatory
+    // snap points don't fight the animation frame by frame.
+    var rafId = null;
+
+    var slide = function (direction) {
+      var max = Math.max(0, track.scrollWidth - track.clientWidth);
+      var target = Math.min(max, Math.max(0, track.scrollLeft + direction * stepSize()));
+
+      if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+
+      var settle = function () {
+        track.style.scrollSnapType = '';
+        syncArrows();
+      };
+
+      if (reduced) {
+        track.scrollLeft = target;
+        settle();
+        return;
+      }
+
+      var start = track.scrollLeft;
+      var delta = target - start;
+      if (!delta) { return; }
+
+      var startedAt = performance.now();
+      var DURATION = 380;
+      track.style.scrollSnapType = 'none';
+
+      // rAF is paused while the document is hidden, so a timer guarantees the track
+      // still lands on the target even if no frame ever runs. Whichever finishes
+      // first wins; the other is cancelled.
+      var guard = setTimeout(function () {
+        if (rafId === null) { return; }
+        cancelAnimationFrame(rafId);
+        rafId = null;
+        track.scrollLeft = target;
+        settle();
+      }, DURATION + 200);
+
+      var frame = function (now) {
+        var k = Math.min(1, (now - startedAt) / DURATION);
+        track.scrollLeft = start + delta * (1 - Math.pow(1 - k, 3)); // ease-out cubic
+        if (k < 1) {
+          rafId = requestAnimationFrame(frame);
+        } else {
+          rafId = null;
+          clearTimeout(guard);
+          settle();
+        }
+      };
+      rafId = requestAnimationFrame(frame);
+    };
+
+    prevBtn.addEventListener('click', function () { slide(-1); });
+    nextBtn.addEventListener('click', function () { slide(1); });
+    track.addEventListener('scroll', syncArrows, { passive: true });
+    window.addEventListener('resize', syncArrows);
+
+    // Fonts landing late can change card heights and widths, so re-check then too.
+    if (document.fonts && document.fonts.ready) { document.fonts.ready.then(syncArrows); }
+    syncArrows();
+  }
+
   /* ---- Scroll spy: highlight the section currently in view ---- */
   var sections = navLinks
     .map(function (link) { return document.querySelector(link.getAttribute('href')); })
